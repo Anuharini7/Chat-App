@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="chatroom-box">
+            <h2 id="roomTitle"></h2>
+            <div class="chat-history" id="chatHistory"></div>
+            <input type="text" id="message" placeholder="Type a message..." required>
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const room = urlParams.get('room');
+        const username = localStorage.getItem('username');
+        const roomTitle = document.getElementById('roomTitle');
+        const chatHistory = document.getElementById('chatHistory');
+
+        roomTitle.textContent = room.charAt(0).toUpperCase() + room.slice(1) + " Room";
+
+        function loadMessages() {
+            const messages = JSON.parse(localStorage.getItem(room)) || [];
+            chatHistory.innerHTML = '';
+            messages.forEach(msg => {
+                const div = document.createElement('div');
+                div.textContent = `${msg.username}: ${msg.message}`;
+                chatHistory.appendChild(div);
+            });
+        }
+
+        document.getElementById('sendBtn').addEventListener('click', function () {
+            const messageInput = document.getElementById('message');
+            const message = messageInput.value.trim();
+            if (message) {
+                const messages = JSON.parse(localStorage.getItem(room)) || [];
+                messages.push({ username, message });
+                localStorage.setItem(room, JSON.stringify(messages));
+                messageInput.value = '';
+                loadMessages();
+            }
+        });
+
+        loadMessages();
+    </script>
+</body>
+</html>
